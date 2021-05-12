@@ -32,10 +32,10 @@ namespace BuildScript
 
         protected override void BeforeBuildExecution(ITaskContext context)
         {
-            ProjectFiles = context.GetFiles(RootDirectory.CombineWith("src"), "**/*.csproj");
-            Projects = WorkingCopy
-                .Discover(RootDirectory.ToFileFullPath(), context)
-                .Versionize();
+            ProjectFiles = context.GetFiles(RootDirectory, "**/*.csproj");
+            //Projects = WorkingCopy
+            //    .Discover(RootDirectory.ToFileFullPath(), context)
+            //    .Versionize();
         }
 
         protected override void ConfigureTargets(ITaskContext context)
@@ -61,17 +61,17 @@ namespace BuildScript
                 restore
             };
 
-            foreach (var project in Projects.UpdatedProjects)
+            foreach (var project in ProjectFiles)
             {
-                var build = context.CreateTarget($"Build {project.ProjectFile}")
-                    .SetDescription($"Builds {project.ProjectFile} in the solution.")
+                var build = context.CreateTarget($"Build{project.FileName}")
+                    .SetDescription($"Builds {project.FileName} in the solution.")
                     .DependsOn(restore)
                     .AddCoreTask(x => x.Build()
-                        .Project(project.ProjectFilePath)
-                        .InformationalVersion(project.NewVersion.ToString()));
+                        .Project(project.ToFullPath())
+                        .InformationalVersion("1.0.0"));
 
-                var pack = context.CreateTarget($"Pack {project.ProjectFile}")
-                    .SetDescription($"Creates nuget package for {project.ProjectFile}")
+                var pack = context.CreateTarget($"Pack{project.FileName}")
+                    .SetDescription($"Creates nuget package for {project.FileName}")
                     .DependsOn(build)
                     .AddCoreTask(x => x.Pack()
                         .NoBuild()
