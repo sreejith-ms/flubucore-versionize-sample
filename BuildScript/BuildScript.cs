@@ -10,7 +10,8 @@ using FlubuCore.Scripting.Attributes;
 namespace BuildScript
 {
 
-    //[IncludeFromDirectory(@"./BuildScript/Versionize", true)]
+    [IncludeFromDirectory(@"./BuildScript/Versionize", true)]
+    [Assembly("./BuildScript/Lib/LibGit2Sharp.dll")]
     [IncludeFromDirectory(@"./BuildScript/Test", true)]
     public class BuildScript : DefaultBuildScript
     {
@@ -33,9 +34,9 @@ namespace BuildScript
         protected override void BeforeBuildExecution(ITaskContext context)
         {
             ProjectFiles = context.GetFiles(RootDirectory, "**/*.csproj");
-            //Projects = WorkingCopy
-            //    .Discover(RootDirectory.ToFileFullPath(), context)
-            //    .Versionize();
+            var abs = WorkingCopy
+                .Discover(RootDirectory.ToFileFullPath(), context)
+                .Versionize();
         }
 
         protected override void ConfigureTargets(ITaskContext context)
