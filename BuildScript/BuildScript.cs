@@ -11,7 +11,6 @@ namespace BuildScript
 {
 
     [IncludeFromDirectory(@"./BuildScript/Versionize", true)]
-    [Assembly("./BuildScript/Lib/LibGit2Sharp.dll")]
     [IncludeFromDirectory(@"./BuildScript/Test", true)]
     public class BuildScript : DefaultBuildScript
     {
