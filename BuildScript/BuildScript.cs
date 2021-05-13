@@ -10,8 +10,8 @@ using FlubuCore.Scripting.Attributes;
 namespace BuildScript
 {
 
-    [IncludeFromDirectory(@"./BuildScript/Versionize", true)]
-    //[IncludeFromDirectory(@"./BuildScript/Test", true)]
+    //[IncludeFromDirectory(@"./BuildScript/Versionize", true)]
+    [IncludeFromDirectory(@"./BuildScript/Test", true)]
     public class BuildScript : DefaultBuildScript
     {
         [FromArg("c|configuration")]
@@ -28,7 +28,7 @@ namespace BuildScript
 
         protected List<FileFullPath> ProjectFiles { get; set; }
 
-        protected Projects Projects { get; set; }
+        //protected Projects Projects { get; set; }
 
         protected override void BeforeBuildExecution(ITaskContext context)
         {
@@ -68,12 +68,14 @@ namespace BuildScript
                     .DependsOn(restore)
                     .AddCoreTask(x => x.Build()
                         .Project(project.ToFullPath())
-                        .InformationalVersion("1.0.0"));
+                        .InformationalVersion("1.0.0"))
+                    ;
 
                 var pack = context.CreateTarget($"Pack{project.FileName}")
                     .SetDescription($"Creates nuget package for {project.FileName}")
                     .DependsOn(build)
                     .AddCoreTask(x => x.Pack()
+                        .Project(project.ToFullPath())
                         .NoBuild()
                         .IncludeSymbols()
                         .VersionSuffix(VersionSuffix)
